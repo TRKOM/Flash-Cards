@@ -2,119 +2,202 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import {GoogleGenAI} from '@google/genai';
+import { categories, FlashcardData } from './flashcard-data.js';
 
 interface Flashcard {
   term: string;
   definition: string;
+  imageUrl?: string;
 }
 
-const topicInput = document.getElementById('topicInput') as HTMLTextAreaElement;
-const generateButton = document.getElementById(
-  'generateButton',
+// Wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM loaded, initializing app...');
+});
+
+const categoryButtons = document.querySelectorAll('.category-btn') as NodeListOf<HTMLButtonElement>;
+const nextCardButton = document.getElementById(
+  'nextCardButton',
 ) as HTMLButtonElement;
 const flashcardsContainer = document.getElementById(
   'flashcardsContainer',
 ) as HTMLDivElement;
 const errorMessage = document.getElementById('errorMessage') as HTMLDivElement;
 
-const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
+// Store current category and card index
+let currentCategory = '';
+let currentCardIndex = 0;
+let currentFlashcards: FlashcardData[] = [];
 
-generateButton.addEventListener('click', async () => {
-  const topic = topicInput.value.trim();
-  if (!topic) {
-    errorMessage.textContent =
-      'Please enter a topic or some terms and definitions.';
-    flashcardsContainer.textContent = '';
-    return;
-  }
+// Check if elements exist
+console.log('Elements found:', {
+  categoryButtons: categoryButtons.length,
+  nextCardButton: !!nextCardButton,
+  flashcardsContainer: !!flashcardsContainer,
+  errorMessage: !!errorMessage
+});
 
-  errorMessage.textContent = 'Generating flashcards...';
+// Function to create a flashcard element
+const createFlashcard = (flashcardData: FlashcardData) => {
+  console.log('Creating flashcard:', flashcardData);
+  
+  // Clear previous cards
   flashcardsContainer.textContent = '';
-  generateButton.disabled = true; // Disable button during generation
+  
+  // Create single card structure
+  const cardDiv = document.createElement('div');
+  cardDiv.classList.add('flashcard', 'single-card');
+  cardDiv.dataset['index'] = '0';
 
-  try {
-    const prompt = `Generate a list of flashcards for the topic of "${topic}". Each flashcard should have a term and a concise definition. Format the output as a list of "Term: Definition" pairs, with each pair on a new line. Ensure terms and definitions are distinct and clearly separated by a single colon. Here's an example output:
-    Hello: Hola
-    Goodbye: Adiós`;
-    const result = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
-    // Use optional chaining and nullish coalescing for safer access
-    const responseText = result?.text ?? '';
+  const cardInner = document.createElement('div');
+  cardInner.classList.add('flashcard-inner');
 
-    if (responseText) {
-      const flashcards: Flashcard[] = responseText
-        .split('\n')
-        // Improved splitting and filtering
-        .map((line) => {
-          const parts = line.split(':');
-          // Ensure there's a term and at least one part for definition
-          if (parts.length >= 2 && parts[0].trim()) {
-            const term = parts[0].trim();
-            const definition = parts.slice(1).join(':').trim(); // Join remaining parts for definition
-            if (definition) {
-              return {term, definition};
-            }
-          }
-          return null; // Return null for invalid lines
-        })
-        .filter((card): card is Flashcard => card !== null); // Filter out nulls and type guard
+  // Front side: Show the image and term
+  const cardFront = document.createElement('div');
+  cardFront.classList.add('flashcard-front');
 
-      if (flashcards.length > 0) {
-        errorMessage.textContent = '';
-        flashcards.forEach((flashcard, index) => {
-          // Create card structure for flipping
-          const cardDiv = document.createElement('div');
-          cardDiv.classList.add('flashcard');
-          cardDiv.dataset['index'] = index.toString();
+  // Add image on front (main focus)
+  const imageElement = document.createElement('img');
+  imageElement.src = flashcardData.imagePath;
+  imageElement.alt = flashcardData.term;
+  imageElement.classList.add('flashcard-image', 'main-image');
+  imageElement.loading = 'lazy';
+  imageElement.onerror = () => {
+    // Fallback if image doesn't exist
+    imageElement.style.display = 'none';
+  };
+  cardFront.appendChild(imageElement);
 
-          const cardInner = document.createElement('div');
-          cardInner.classList.add('flashcard-inner');
+  // Add term below image
+  const termDiv = document.createElement('div');
+  termDiv.classList.add('term');
+  termDiv.textContent = flashcardData.term;
+  cardFront.appendChild(termDiv);
 
-          const cardFront = document.createElement('div');
-          cardFront.classList.add('flashcard-front');
+  // Back side: Show definition only
+  const cardBack = document.createElement('div');
+  cardBack.classList.add('flashcard-back');
 
-          const termDiv = document.createElement('div');
-          termDiv.classList.add('term');
-          termDiv.textContent = flashcard.term;
+  const definitionDiv = document.createElement('div');
+  definitionDiv.classList.add('definition');
+  definitionDiv.textContent = flashcardData.definition;
+  cardBack.appendChild(definitionDiv);
 
-          const cardBack = document.createElement('div');
-          cardBack.classList.add('flashcard-back');
+  // Add a small image on the back too
+  const backImageElement = document.createElement('img');
+  backImageElement.src = flashcardData.imagePath;
+  backImageElement.alt = flashcardData.term;
+  backImageElement.classList.add('flashcard-image', 'back-image');
+  backImageElement.loading = 'lazy';
+  backImageElement.onerror = () => {
+    backImageElement.style.display = 'none';
+  };
+  cardBack.appendChild(backImageElement);
 
-          const definitionDiv = document.createElement('div');
-          definitionDiv.classList.add('definition');
-          definitionDiv.textContent = flashcard.definition;
+  cardInner.appendChild(cardFront);
+  cardInner.appendChild(cardBack);
+  cardDiv.appendChild(cardInner);
+  flashcardsContainer.appendChild(cardDiv);
 
-          cardFront.appendChild(termDiv);
-          cardBack.appendChild(definitionDiv);
-          cardInner.appendChild(cardFront);
-          cardInner.appendChild(cardBack);
-          cardDiv.appendChild(cardInner);
+  // Add click listener to toggle the 'flipped' class
+  cardDiv.addEventListener('click', () => {
+    cardDiv.classList.toggle('flipped');
+  });
+  
+  // Show Next Card button
+  nextCardButton.style.display = 'inline-block';
+  
+  // Clear any error messages
+  errorMessage.textContent = '';
+};
 
-          flashcardsContainer.appendChild(cardDiv);
+// Function to show a random card from the current category
+const showRandomCard = () => {
+  if (currentFlashcards.length === 0) return;
+  
+  // Get a random card
+  const randomIndex = Math.floor(Math.random() * currentFlashcards.length);
+  const flashcardData = currentFlashcards[randomIndex];
+  
+  createFlashcard(flashcardData);
+  
+  // Only add back button if it doesn't exist
+  if (!document.querySelector('.back-button')) {
+    addBackButton();
+  }
+};
 
-          // Add click listener to toggle the 'flipped' class
-          cardDiv.addEventListener('click', () => {
-            cardDiv.classList.toggle('flipped');
-          });
-        });
-      } else {
-        errorMessage.textContent =
-          'No valid flashcards could be generated from the response. Please check the format.';
-      }
-    } else {
-      errorMessage.textContent =
-        'Failed to generate flashcards or received an empty response. Please try again.';
+// Category button click handlers
+categoryButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const category = button.dataset.category;
+    if (!category || !categories[category]) return;
+    
+    console.log('Category selected:', category);
+    
+    // Remove any existing back buttons when switching categories
+    const existingBackButton = document.querySelector('.back-button');
+    if (existingBackButton) {
+      existingBackButton.remove();
     }
-  } catch (error: unknown) {
-    console.error('Error generating content:', error);
-    const detailedError =
-      (error as Error)?.message || 'An unknown error occurred';
-    errorMessage.textContent = `An error occurred: ${detailedError}`;
-    flashcardsContainer.textContent = ''; // Clear cards on error
-  } finally {
-    generateButton.disabled = false; // Re-enable button
+    
+    // Store current category and flashcards
+    currentCategory = category;
+    currentFlashcards = categories[category].flashcards;
+    currentCardIndex = 0;
+    
+    // Keep category selection visible - don't hide it
+    // This allows kids to easily switch between categories
+    
+    // Show first card
+    showRandomCard();
+  });
+});
+
+// Next Card button functionality
+nextCardButton.addEventListener('click', () => {
+  console.log('Next Card button clicked!');
+  if (currentFlashcards.length > 0) {
+    showRandomCard();
+  } else {
+    errorMessage.textContent = 'Please select a category first.';
   }
 });
+
+// Add a "Back to Categories" button functionality
+const addBackButton = () => {
+  // Remove any existing back buttons first
+  const existingBackButton = document.querySelector('.back-button');
+  if (existingBackButton) {
+    existingBackButton.remove();
+  }
+  
+  const backButton = document.createElement('button');
+  backButton.textContent = '← Back to Categories';
+  backButton.classList.add('back-button');
+  backButton.style.cssText = `
+    background: #f8f9fa;
+    color: #5f6368;
+    border: 2px solid #e9ecef;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 15px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  `;
+  
+  backButton.addEventListener('click', () => {
+    // Hide cards and next button
+    flashcardsContainer.textContent = '';
+    nextCardButton.style.display = 'none';
+    backButton.remove();
+    
+    // Clear current state
+    currentCategory = '';
+    currentFlashcards = [];
+  });
+  
+  // Insert back button before next card button
+  nextCardButton.parentNode?.insertBefore(backButton, nextCardButton);
+};

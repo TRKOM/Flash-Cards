@@ -123,6 +123,247 @@ button:disabled {
   box-shadow: none;
 }
 
+/* Next Card Button */
+.next-card-button {
+  background: linear-gradient(135deg, light-dark(var(--light-primary), var(--dark-primary)), light-dark(var(--light-primary-hover), var(--dark-primary-hover)));
+  margin-left: 15px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.next-card-button:hover {
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px light-dark(var(--light-shadow-color-1), var(--dark-shadow-color-1));
+}
+
+.next-card-button .arrow {
+  display: inline-block;
+  margin-right: 8px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform 0.3s ease;
+}
+
+.next-card-button:hover .arrow {
+  transform: translateX(2px);
+}
+
+.next-card-button:active {
+  transform: translateX(1px);
+}
+
+/* Category Selection */
+.category-selection {
+  margin: 30px 0;
+  position: sticky;
+  top: 20px;
+  z-index: 10;
+  background: light-dark(var(--light-bg), var(--dark-bg));
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px light-dark(var(--light-shadow-color-2), var(--dark-shadow-color-2));
+}
+
+.category-selection h2 {
+  color: light-dark(var(--light-text-primary), var(--dark-text-primary));
+  margin-bottom: 20px;
+  font-size: 1.3em;
+  font-weight: 500;
+}
+
+.category-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.category-btn {
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  border: 3px solid #e9ecef;
+  border-radius: 20px;
+  padding: 25px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 140px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.category-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(26, 115, 232, 0.1), rgba(138, 180, 248, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.category-btn:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-color: #1a73e8;
+}
+
+.category-btn:hover::before {
+  opacity: 1;
+}
+
+.category-btn:active {
+  transform: translateY(-3px);
+}
+
+.category-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 12px auto;
+  display: block;
+  position: relative;
+  z-index: 1;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4ECDC4, #44A08D);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Animals icon - paw print */
+.animals-icon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 
+    0 0 0 3px white,
+    0 0 0 6px #4ECDC4,
+    0 0 0 9px white;
+}
+
+.animals-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #4ECDC4;
+  border-radius: 50%;
+  box-shadow: 
+    8px 8px 0 #4ECDC4,
+    -8px 8px 0 #4ECDC4,
+    0 16px 0 #4ECDC4;
+}
+
+/* Colors icon - paint palette */
+.colors-icon {
+  background: linear-gradient(135deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4, #FFEAA7);
+}
+
+.colors-icon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #FF6B6B;
+}
+
+.colors-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  background: #4ECDC4;
+  border-radius: 50%;
+  box-shadow: 
+    12px 0 0 #45B7D1,
+    6px 8px 0 #96CEB4,
+    -6px 8px 0 #FFEAA7;
+}
+
+/* Fruits icon - apple */
+.fruits-icon {
+  background: linear-gradient(135deg, #FF6B6B, #E74C3C);
+}
+
+.fruits-icon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 25px;
+  height: 25px;
+  background: #E74C3C;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow: 0 0 0 2px white;
+}
+
+.fruits-icon::after {
+  content: '';
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 8px;
+  background: #27AE60;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px white;
+}
+
+.category-btn span {
+  display: block;
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #202124;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode category buttons */
+@media (prefers-color-scheme: dark) {
+  .category-btn {
+    background: linear-gradient(135deg, #2d2e30, #3c4043);
+    border-color: #5f6368;
+    color: #e8eaed;
+  }
+  
+  .category-btn span {
+    color: #e8eaed;
+  }
+  
+  .category-btn::before {
+    background: linear-gradient(135deg, rgba(138, 180, 248, 0.2), rgba(174, 203, 250, 0.2));
+  }
+  
+  .category-btn:hover {
+    border-color: #8ab4f8;
+  }
+}
+
 .error-message {
   color: light-dark(var(--light-error), var(--dark-error));
   margin-top: 20px;
@@ -137,6 +378,8 @@ button:disabled {
   margin-top: 40px;
   justify-content: center;
   perspective: 1000px; /* Add perspective for 3D effect */
+  align-items: center;
+  min-height: 300px;
 }
 
 .flashcard {
@@ -179,8 +422,18 @@ button:disabled {
   padding: 20px; /* Reduced padding for content */
   box-sizing: border-box;
   border-radius: 10px; /* Match parent */
-  border: 1px solid light-dark(var(--light-border), var(--dark-border)); /* Apply border here */
-  background-color: light-dark(var(--light-card-bg), var(--dark-card-bg)); /* Apply background here */
+  border: 2px solid #e9ecef; /* Apply border here */
+  background: linear-gradient(135deg, #ffffff, #f8f9fa); /* Apply background here */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode flashcard backgrounds */
+@media (prefers-color-scheme: dark) {
+  .flashcard-front,
+  .flashcard-back {
+    border-color: #5f6368;
+    background: linear-gradient(135deg, #2d2e30, #3c4043);
+  }
 }
 
 .flashcard-back {
@@ -207,6 +460,83 @@ button:disabled {
   font-size: 1.0em; /* Adjust size */
   color: light-dark(var(--light-text-secondary), var(--dark-text-secondary));
   line-height: 1.4; /* Adjust line height */
+}
+
+/* Single card layout */
+.single-card {
+  width: 300px;
+  height: 250px;
+  margin: 0 auto;
+}
+
+/* Main image on front (larger, more prominent) */
+.flashcard-image.main-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px light-dark(var(--light-shadow-color-1), var(--dark-shadow-color-1));
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 3px solid light-dark(var(--light-primary), var(--dark-primary));
+  filter: brightness(1.1) saturate(1.1) contrast(1.1);
+}
+
+.flashcard-image.main-image:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 12px light-dark(var(--light-shadow-color-1), var(--dark-shadow-color-1));
+}
+
+/* Back image (smaller, supporting) */
+.flashcard-image.back-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px light-dark(var(--light-shadow-color-2), var(--dark-shadow-color-2));
+  border: 2px solid light-dark(var(--light-border), var(--dark-border));
+  filter: brightness(1.05) saturate(1.05);
+}
+
+/* Adjust flashcard height to accommodate images */
+:root {
+  --flashcard-height: 200px; /* Increased height for images */
+}
+
+/* Add a subtle border to make images more defined */
+.flashcard-front,
+.flashcard-back {
+  padding: 15px; /* Slightly reduced padding to accommodate images */
+}
+
+/* Ensure text is still readable with images */
+.term {
+  font-size: 1.4em;
+  font-weight: 600;
+  margin-top: 12px;
+  color: #202124;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 1.3;
+}
+
+.definition {
+  font-size: 1.1em;
+  margin-top: 12px;
+  color: #5f6368;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Dark mode text */
+@media (prefers-color-scheme: dark) {
+  .term {
+    color: #e8eaed;
+  }
+  
+  .definition {
+    color: #bdc1c6;
+  }
 }
 
 footer {
